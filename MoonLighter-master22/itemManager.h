@@ -158,6 +158,7 @@ public:
 
 	//게임에 사용하는 아이템들 추가하는 함수 
 	void addGameItems();
+
 	gameItem getItemByIdx(int idx);
 
 	//아이템 클래스 담겨있는 벡터 가져오기
