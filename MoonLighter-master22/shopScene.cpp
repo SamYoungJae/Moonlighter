@@ -34,8 +34,7 @@ void shopScene::ItemPosSet()
 HRESULT shopScene::init()
 {
 	//클래스 초기화
-
-	_displayStand = new displayStand;
+	_displayStand = new displayStand();
 	_displayStand->init();
 
 	_npc = new ShopNpcManager;
@@ -88,19 +87,21 @@ HRESULT shopScene::init()
 	CAMERAMANAGER->FadeStart();
 
 	_pixelBackGround = false;
+
 	return S_OK;
 }
 
 void shopScene::release()
 {
-	/*_npc->release();
+	_npc->release();
+
 	SAFE_DELETE(_npc);
 	SAFE_DELETE(_cashRegister);
 	SAFE_DELETE(_button);
 	SAFE_DELETE(_door);
 
 	_displayStand->release();
-	SAFE_DELETE(_displayStand);*/
+	SAFE_DELETE(_displayStand);
 }
 
 void shopScene::update()
@@ -130,10 +131,6 @@ void shopScene::update()
 	PlayerCol();
 	PortaltoTown();
 
-	if (INPUT->GetKeyDown('Q')) {
-		if (!_isShopOpen)_isShopOpen = true;
-		else _isShopOpen = false;
-	}
 
 	if (_isShopOpen)
 	npcAI();
@@ -359,7 +356,7 @@ void shopScene::sellStandAction()
 		if (INPUT->GetKeyDown('J'))
 		{
 			_displayStand->openDisplayStand();
-
+			_isShopOpen = true;
 			_displayStand->setCanGrab(false);
 		}
 	}

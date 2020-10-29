@@ -52,8 +52,17 @@ HRESULT displayStand::init()
 
 void displayStand::release()
 {
-	//_cursor->release();
-	//SAFE_DELETE(_cursor);
+	for (int i = 0; i < _vShopInven.size(); i++)
+	{
+		SAFE_DELETE(_vShopInven[i]);
+	}
+
+	_fadeManager->release();
+
+	SAFE_DELETE(_fadeManager);
+
+	_cursor->release();
+	SAFE_DELETE(_cursor);
 }
 
 void displayStand::update()
@@ -77,7 +86,7 @@ void displayStand::update()
 			keyInput();
 
 			//현재 디스플레이중인 아이템 업데이트 
-			getDisplayItem();
+			//getDisplayItem();
 
 			//커서 애니메이션 함수 
 			_cursor->update();
@@ -168,6 +177,8 @@ void displayStand::closeDisplayStand()
 		ITEMMENU->getInventory()->syncWithShopInven(_vShopInven);
 
 		_fadeManager->fadeInit(16, FADE_IN);
+
+		getDisplayItem();
 	}
 }
 
@@ -393,9 +404,7 @@ gameItem displayStand::findItemByIdx(int index)
 		if (_vShopInven[i]->getPrice() == 0) return _itemEmpty;
 		else
 		{
-			gameItem *item = new gameItem;
-			item->init(_vShopInven[i]);
-			return *item;
+			return *_vShopInven[i];
 		}
 	}
 
