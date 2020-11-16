@@ -125,6 +125,7 @@ void bossGolemKing::update()
 	//체력바 업데이트
 	_hpRed->update(_hp);
 	_hpWhite->update(_hp);
+	this->collisionArrow();
 	//체력 0되면 죽여!
 	if (_hp <= 0 && _golemState != GOLEMKINGSTATE::BS_INIT && _golemState != GOLEMKINGSTATE::BS_DEAD)
 	{
@@ -768,7 +769,7 @@ void bossGolemKing::bsHandUpdate()
 		//카메라 밖으로 나갔으면 상태변경
 		if (_golemHand.hight < CAMERAMANAGER->getRect().top - 200)
 		{
-			if (_golemHand.atkCount < 3)
+			if (_golemHand.atkCount < 4)
 			{
 				_golemHand.state = HANDSTATE::HAND_INIT;
 				_golemHand.count = 200;
@@ -777,7 +778,7 @@ void bossGolemKing::bsHandUpdate()
 				_golemHand.ani->aniRestart();
 				_golemHand.ani->aniStop();
 			}
-			else if(_golemHand.atkCount == 3)
+			else if(_golemHand.atkCount == 4)
 			{
 				if(_golemAni != GOLEMANISTATE::ANI_HANDSHOOTEND)
 				this->changeAniState(GOLEMANISTATE::ANI_HANDSHOOTEND);
@@ -875,6 +876,18 @@ void bossGolemKing::collisionRock()
 				}
 			}
 			
+		}
+	}
+}
+
+void bossGolemKing::collisionArrow()
+{
+	RECT temp;
+	for (int i = 0; i < _vRock.size(); i++)
+	{
+		if (IntersectRect(&temp, &PLAYER->getArrow()->getRect(), &_vRock[i].colRC))
+		{
+			PLAYER->getArrow()->setIsShoot(false);
 		}
 	}
 }

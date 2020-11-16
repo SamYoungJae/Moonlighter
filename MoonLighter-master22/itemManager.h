@@ -1,4 +1,6 @@
 #pragma once
+#include "csvload.h"
+
 #define MAXITEM	16
 
 //아이템의 종류 
@@ -42,7 +44,7 @@ enum POPULARITY
 
 enum ITEMMOVESTATE
 {
-	ITEM_INIT,ITEM_FALL,ITEM_FOLLOW,ITEM_IDLE,ITEM_CHECKSTATE
+	ITEM_INIT, ITEM_FALL, ITEM_FOLLOW, ITEM_IDLE, ITEM_CHECKSTATE
 };
 
 typedef struct
@@ -106,15 +108,15 @@ public:
 	const char* getName() { return _item.name; }
 	POINT getPos() { return _item.itemPos; }
 
-	int getInvenPosIdx() { return _item.invenPosIdx; }
-	int getItemIdx() { return _item.itemIdx; }
-	int getPotionValue() { return _item.potionValue; }
+	int& getInvenPosIdx() { return _item.invenPosIdx; }
+	int& getItemIdx() { return _item.itemIdx; }
+	int& getPotionValue() { return _item.potionValue; }
 	int *getAbility() { return _item.ability; }
 	int *getPriceRange() { return _item.priceRange; }
-	int getPrice() { return _item.price; }
-	int getPopularity() { return _item.popularity; }
-	int getCount() { return _item.count; }
-	int getMaxCount() { return _item.maxCount; }
+	int& getPrice() { return _item.price; }
+	int& getPopularity() { return _item.popularity; }
+	int& getCount() { return _item.count; }
+	int& getMaxCount() { return _item.maxCount; }
 	bool getIsObtained() { return _item.isObtained; }
 
 	//set함수 
@@ -122,7 +124,7 @@ public:
 	void setInvenPosIdx(int index) { _item.invenPosIdx = index; }
 	void setPrice(int price) { _item.price = price; }
 	void addPrice(int addValue) { _item.price += addValue; }
-	void subPrice(int subValue) { _item.price -= subValue; }	
+	void subPrice(int subValue) { _item.price -= subValue; }
 	void setCount(int count) { _item.count = count; }
 	void plusOneCount() { _item.count++; }				//아이템 개수 +1
 	void minusOneCount() { _item.count--; }				//아이템 개수 -1
@@ -135,9 +137,11 @@ class itemManager
 private:
 	typedef vector<gameItem*> vItem;
 	typedef vector<gameItem*>::iterator viItem;
+	int _cnt;
 
 private:
 	vItem _vItem;
+	unordered_map<int, ::Item> m_itemData;
 
 public:
 	HRESULT init();
@@ -155,6 +159,8 @@ public:
 	void addEquipmentItem(string itemKey, string nameKey, string desKey, const char* name,
 		ITEM type, int itemIdx, int hpValue, int atkValue, int defValue, int spdValue,
 		int cheapPrice, int reasonablePrice, int expensivePrice, int outrageousPrice, int maxCount);
+
+	void csvItemDataLoad(string path, CSVITEMTYPE _type);
 
 	//게임에 사용하는 아이템들 추가하는 함수 
 	void addGameItems();

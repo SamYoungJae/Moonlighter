@@ -3,7 +3,7 @@
 
 HRESULT enemy::init(int x, int y)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void enemy::release()
@@ -84,6 +84,7 @@ void enemy::setWallTile(vector<tagTile> vTile)
 			if (_totalNode[y][x].nodeState == NODE_WALL)
 			{
 				_totalNode[y][x].nodeState = NODE_EMPTY;
+				_totalNode[y][x].wallState = WALL_EMPTY;
 			}
 		}
 	}
@@ -101,6 +102,10 @@ void enemy::setWallTile(vector<tagTile> vTile)
 					if (vTile[i].tState == TS_HOLE || vTile[i].tState == TS_MOVEBAN)
 					{
 						_totalNode[y][x].nodeState = NODE_WALL;
+						if (vTile[i].tState == TS_HOLE)
+							_totalNode[y][x].wallState = WALL_HOLE;
+						else if (vTile[i].tState == TS_MOVEBAN)
+							_totalNode[y][x].wallState = WALL_OBJ;
 					}
 				}
 			}

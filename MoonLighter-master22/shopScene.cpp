@@ -34,8 +34,15 @@ void shopScene::ItemPosSet()
 HRESULT shopScene::init()
 {
 	//클래스 초기화
-	_displayStand = new displayStand();
-	_displayStand->init();
+	if (ITEMMENU->getInitDisplayStand())
+	{
+		_displayStand->initShopInven();
+	}
+	else
+	{
+		_displayStand = new displayStand;
+		_displayStand->init();
+	}
 
 	_npc = new ShopNpcManager;
 	_npc->init(_displayStand);
@@ -100,8 +107,8 @@ void shopScene::release()
 	SAFE_DELETE(_button);
 	SAFE_DELETE(_door);
 
-	_displayStand->release();
-	SAFE_DELETE(_displayStand);
+	//_displayStand->release();
+	//SAFE_DELETE(_displayStand);
 }
 
 void shopScene::update()
@@ -255,8 +262,17 @@ void shopScene::itemInfoUpdate()  // 좌판의 아이템정보를 검사해 npc를 초기화시키
 		_disMenuOn = true;
 	}
 	else if (_disMenuOn && !PLAYER->getDisplayOn()){
-
+		
 		  _disMenuOn = false;
+
+		  for (int i = 0; i < _npc->getVector().size(); i++)
+		  {
+			  if (_npc->getVector()[i]->getCurrentTargetIdx() == 2) {
+				  _npc->getVector()[i]->setCurrentTargetIdx(2);
+				  _npc->getVector()[i]->setState(NPC_MOVE);
+				  _npc->getVector()[i]->setDelay(false);
+			 }
+		  }
 	}
 	for (int i = 0; i < _npc->getVector().size(); i++)
 	{

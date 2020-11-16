@@ -45,7 +45,7 @@ HRESULT player::init()
 	_rollCount = 0;
 	_rollIndex = 0;
 	_rollJumpPower = 0;
-	_rollGravity = 0;
+	_rollAngle = 0;
 
 	_skillCount = 0;
 	_skillIndex = 0;
@@ -72,7 +72,7 @@ void player::release()
 void player::update()
 {
 	this->arrowSkillSet();
-
+	this->setPlayerRoll();
 	this->playerState();
 	this->animation(_player.direction);
 	this->hitPlayer();
@@ -174,7 +174,6 @@ void player::render(HDC hdc)
 
 
 	}
-
 }
 
 int player::getMaxItemSlot()
@@ -289,38 +288,47 @@ void player::playerState()
 
 		case PLAYER_ROLL:
 			_rollJumpPower = 5.0f;
-			_rollGravity = 0.1f;
 			_player.dashCount++;
 			if(_player.dashCount % 5 == 0)
 			EFFECTMANAGER->addParticle("대시이펙트", _player.y, _player.x, _player.y,true,90);
 			_rollCount++;
-			switch (_player.direction)
-			{
-			case 0:
-				_player.y += _rollJumpPower;
-				break;
-			case 1:
-				_player.y -= _rollJumpPower;
-				break;
-			case 2:
-				_player.x += _rollJumpPower;
-				break;
-			case 3:
-				_player.x -= _rollJumpPower;
-				break;
-			}
+			
+			_player.x += cosf(_rollAngle) * _rollJumpPower;
+			_player.y -= sinf(_rollAngle) * _rollJumpPower;
 
-			_rollJumpPower -= _rollGravity;
+
 			if (_aniDgRoll->getAniState() == ANIMATION_END ||
 				_aniTownRoll->getAniState() == ANIMATION_END)
 			{
 				_state = PLAYER_IDLE;
 				_rollCount = 0;
 				_rollIndex = 0;
-				_rollGravity = 0;
 				_rollJumpPower = 0;
 				_player.dashCount = 0;
+				
+				switch (_aniTownRoll->getFrameY())
+				{
+				case 0: // 아래
+					_rollAngle = DEGREE(270);
+					break;
+				case 1: // 위
+					_rollAngle = DEGREE(90);
+					break;
+				case 2: // 오
+					_rollAngle = DEGREE(0);
+					break;
+				case 3: // 왼
+					_rollAngle = DEGREE(180);
+					break;
+				default:
+					break;
+				}
+				_right = false;
+				_left = false;
+				_up = false;
+				_down = false;
 			}
+			
 			break;
 
 		case PLAYER_FALL:
@@ -393,6 +401,9 @@ void player::playerState()
 				_player.direction = 2;
 				_right = true;
 			}
+			else {
+				_right = false;
+			}
 			if (INPUT->GetKeyUp('K'))
 			{
 				_state = PLAYER_IDLE;
@@ -435,7 +446,6 @@ void player::playerState()
 				_holeAlpha = 255;
 				_state = PLAYER_ROLL;
 			}
-			cout << _state << endl;
 			break;
 		case PLAYER_DIE:
 			if (_aniDie->getAniState() == ANIMATION_END && !_isDie)
@@ -584,9 +594,9 @@ void player::updateWeaponState()
 		_player.weapon = BOW;
 		break;
 
-	//default:
-	//	_player.weapon = SHORT_SOWRD;
-	//	break;
+	default:
+		_player.weapon = SHORT_SOWRD;
+		break;
 	}
 }
 
@@ -760,6 +770,57 @@ void player::arrowSkillSet()
 	{
 		_bowCharge->aniStop();
 		_isSkill = true;
+	}
+
+}
+
+void player::setPlayerRoll()
+{
+	//오른쪽은 0
+	//왼쪽은 PI
+	//위는 pi/2
+	//아래는 PI/2 *3
+	//우상 pi /4 ,dw
+	//좌상 pi/4 * 3
+	//우하 pi / 4 *3 +pi
+	//좌하 pi /4 + pi
+	if (_right)
+	{
+		if (_up)
+		{
+			_rollAngle = PI / 4;
+		}
+		else if (_down)
+		{
+			_rollAngle = (PI / 4 * 3) + PI;
+		}
+		else
+		{
+			_rollAngle = 0;
+		}
+	}
+	else if (_left)
+	{
+		if (_up)
+		{
+			_rollAngle = PI / 4 * 3;
+		}
+		else if (_down)
+		{
+			_rollAngle = PI / 4 + PI;
+		}
+		else
+		{
+			_rollAngle = PI;
+		}
+	}
+	else if (_up)
+	{
+		_rollAngle = PI / 2;
+	}
+	else if (_down)
+	{
+		_rollAngle = PI / 2 * 3;
 	}
 
 }

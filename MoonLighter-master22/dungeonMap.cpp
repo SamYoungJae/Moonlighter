@@ -731,7 +731,7 @@ void DungeonMap::checkColiHole()
 		{
 			if (_vTile[i].tState == TS_HOLE)
 			{
-				if (PLAYER->getPlayerState() == PLAYER_RUN || PLAYER->getPlayerState() == HIT_RUN)
+				if (PLAYER->getPlayerState() == PLAYER_RUN || PLAYER->getPlayerState() == HIT_RUN || PLAYER->getPlayerState () == PLAYER_SHILED)
 				{
 					int wid = temp.right - temp.left;
 					int hei = temp.bottom - temp.top;
@@ -829,7 +829,16 @@ void DungeonMap::checkColiHole()
 					{
 						PLAYER->setPlayerState(PLAYER_FALL);
 						PLAYERDATA->setInDungeonHp(PLAYERDATA->getInDungeonHp() - 10);
-						
+						if (PLAYERDATA->getInDungeonHp() <= 0)
+						{
+							PLAYER->setPlayerState(PLAYER_DIE);
+							RESULTENEMY* em = new RESULTENEMY;
+							em->attack = new animation;
+							em->attack->init(IMAGEMANAGER->findImage(_vTile[i].key), 0, 7, true);
+							em->frameY = 0;
+							em->scale = 1.f;
+							PLAYERDATA->setKillEnemy(em);
+						}
 					}
 					else
 					{

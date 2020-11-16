@@ -175,8 +175,8 @@ bool gameItem::checkCollision(RECT rc)
 {
 	RECT tempRect;
 
-	if (IntersectRect(&tempRect, &_item.rc, &rc)) return true; 
-	else false; 
+	if (IntersectRect(&tempRect, &_item.rc, &rc)) return true;
+	else false;
 }
 
 //=============================================================
@@ -233,61 +233,83 @@ void itemManager::addEquipmentItem(string itemKey, string nameKey, string desKey
 	_vItem.push_back(item);
 }
 
+void itemManager::csvItemDataLoad(string path, CSVITEMTYPE _type)
+{
+	FILE* fp = fopen(path.c_str(), "rt");
+
+	vector<string> column;
+	vector<string> DataType;
+
+	CSVData::parse(fp, column);
+	CSVData::parse(fp, DataType);
+
+	vector<string> Data;
+	int cnt = 1;
+	while (CSVData::parse(fp, Data))
+	{
+		::Item data;
+
+		data.FillData(Data, _type);
+
+		m_itemData.insert(make_pair(cnt, data));
+		cnt++;
+		Data.clear();
+	}
+
+	fclose(fp);
+
+	for (int i = 1; i <= m_itemData.size(); i++)
+	{
+		switch (_type)
+		{
+		case CSV_NOMAL:
+			addNormalItem(m_itemData[i].getItemKey(), m_itemData[i].getNameKey(), m_itemData[i].getDesKey(), m_itemData[i].getName().c_str(), m_itemData[i].getItemIdx(), m_itemData[i].getCheapPrice(), m_itemData[i].getReasonablePrice(), m_itemData[i].getExpensivePrice(), m_itemData[i].getOutrageousPrice(), m_itemData[i].getMaxCount());
+			break;
+		case CSV_POTION:
+			addPotionItem(m_itemData[i].getItemKey(), m_itemData[i].getNameKey(), m_itemData[i].getDesKey(), m_itemData[i].getName().c_str(), m_itemData[i].getItemIdx(), m_itemData[i].getpotionValue(), m_itemData[i].getCheapPrice(), m_itemData[i].getReasonablePrice(), m_itemData[i].getExpensivePrice(), m_itemData[i].getOutrageousPrice(), m_itemData[i].getMaxCount());
+			break;
+		case CSV_WEAPON:
+			addEquipmentItem(m_itemData[i].getItemKey(), m_itemData[i].getNameKey(), m_itemData[i].getDesKey(), m_itemData[i].getName().c_str(), ITEM_WEAPON, m_itemData[i].getItemIdx(), m_itemData[i].gethpValue(), m_itemData[i].getatkValue(), m_itemData[i].getdefValue(), m_itemData[i].getspdValue(), m_itemData[i].getCheapPrice(), m_itemData[i].getReasonablePrice(), m_itemData[i].getExpensivePrice(), m_itemData[i].getOutrageousPrice(), m_itemData[i].getMaxCount());
+			break;
+		default:
+			break;
+		}
+	}
+	m_itemData.clear();
+
+}
+
 //°ÔÀÓ¿¡ »ç¿ëÇÏ´Â ¾ÆÀÌÅÛµé Ãß°¡ÇÏ´Â ÇÔ¼ö 
 void itemManager::addGameItems()
 {
 	////ÀÏ¹Ý ¾ÆÀÌÅÛ Ãß°¡
-	//addNormalItem("richJelly", "name_richJelly", "des_richJelly", "richJelly", RICHJELLY_IDX, 3, 6, 8, 9, 10);
-	//addNormalItem("venomJelly", "name_venomJelly", "des_venomJelly", "venomJelly", VENOMJELLY_IDX, 17, 22, 24, 25, 10);
-	//addNormalItem("crystal", "name_crystal", "des_crystal", "crystal", CRYSTAL_IDX, 89, 110, 115, 116, 5);
-	//addNormalItem("crystal", "name_crystal", "des_crystal", "crystal", CRYSTAL_IDX, 89, 110, 115, 116, 5);
-
-	//addNormalItem("vine", "name_vine", "des_vine", "vine", VINE_IDX, 2, 3, 5, 6, 10);
-	//addNormalItem("teethStone", "name_teethStone", "des_teethStone", "teethStone", TEETHSTONE_IDX, 3, 6, 8, 9, 10);
-	//addNormalItem("root", "name_root", "des_root", "root", ROOT_IDX, 3, 6, 8, 9, 10);
-	//addNormalItem("ironBar", "name_ironBar", "des_ironBar", "ironBar", IRONBAR_IDX, 21, 28, 30, 31, 10);
-	//addNormalItem("foundryRests", "name_foundryRests", "des_foundryRests", "foundryRests", FOUNDRYRESTS_IDX, 134, 165, 173, 174, 5);
-	//addNormalItem("brokenSword", "name_brokenSword", "des_brokenSword", "brokenSword", BROKENSWORD_IDX, 134, 165, 173, 174, 5);
-	//addNormalItem("fabric", "name_fabric", "des_fabric", "fabric", FABRIC_IDX, 224, 275, 288, 289, 5);
-	//addNormalItem("hardenedSteel", "name_hardenedSteel", "des_hardenedSteel", "hardenedSteel", HARDENEDSTEEL_IDX, 269, 330, 345, 346, 5);
+	//addNormalItem("Ç³ºÎÇÑ Á©¸®", "name_richJelly", "des_richJelly", "Ç³ºÎÇÑ Á©¸®", RICHJELLY_IDX, 3, 6, 8, 9, 10);
+	//addNormalItem("¸Íµ¶¼º Á©¸®", "name_venomJelly", "des_venomJelly", "¸Íµ¶¼º Á©¸®", VENOMJELLY_IDX, 17, 22, 24, 25, 10);
+	//addNormalItem("°­È­ ¼öÁ¤", "name_crystal", "des_crystal", "°­È­ ¼öÁ¤", CRYSTAL_IDX, 89, 110, 115, 116, 5);
+	//addNormalItem("µ¢±¼", "name_vine", "des_vine", "µ¢±¼", VINE_IDX, 2, 3, 5, 6, 10);
+	//addNormalItem("ÀÌ»¡¼®", "name_teethStone", "des_teethStone", "ÀÌ»¡¼®", TEETHSTONE_IDX, 3, 6, 8, 9, 10);
+	//addNormalItem("»Ñ¸®", "name_root", "des_root", "»Ñ¸®", ROOT_IDX, 3, 6, 8, 9, 10);
+	//addNormalItem("¼è¸·´ë", "name_ironBar", "des_ironBar", "¼è¸·´ë", IRONBAR_IDX, 21, 28, 30, 31, 10);
+	//addNormalItem("ÁÖ¹° ÀÜÇØ", "name_foundryRests", "des_foundryRests", "ÁÖ¹° ÀÜÇØ", FOUNDRYRESTS_IDX, 134, 165, 173, 174, 5);
+	//addNormalItem("¸Á°¡Áø °Ë", "name_brokenSword", "des_brokenSword", "¸Á°¡Áø °Ë", BROKENSWORD_IDX, 134, 165, 173, 174, 5);
+	//addNormalItem("Ãµ", "name_fabric", "des_fabric", "Ãµ", FABRIC_IDX, 224, 275, 288, 289, 5);
+	//addNormalItem("°æÈ­ °­Ã¶", "name_hardenedSteel", "des_hardenedSteel", "°æÈ­ °­Ã¶", HARDENEDSTEEL_IDX, 269, 330, 345, 346, 5);
 
 	////Æ÷¼Ç ¾ÆÀÌÅÛ Ãß°¡ 
-	//addPotionItem("hpPotion1", "name_hpPotion1", "des_hpPotion1", "hpPotion1",
+	//addPotionItem("HP ¹°¾à¥°", "name_hpPotion1", "des_hpPotion1", "HP ¹°¾à¥°",
 	//	POTION1_IDX, 40, 111, 138, 144, 145, 5);
-	//addPotionItem("hpPotion2", "name_hpPotion2", "des_hpPotion2", "hpPotion2",
+	//addPotionItem("HP ¹°¾à¥±", "name_hpPotion2", "des_hpPotion2", "HP ¹°¾à¥±",
 	//	POTION2_IDX, 75, 719, 880, 920, 921, 5);
 
 	////¹«±â ¾ÆÀÌÅÛ Ãß°¡ 
-	//addEquipmentItem("trainingBow", "name_trainingBow", "des_trainingBow",
-	//	"trainingBow", ITEM_WEAPON, TRAININGBOW_IDX, 0, 15, 0, 0, 899, 1100, 1150, 1151, 1);
-	//addEquipmentItem("trainingShortSword", "name_trainingShortSword", "des_trainingShortSword",
-	//	"trainingShortSword", ITEM_WEAPON, TRAININGSWORD_IDX, 0, 20, 0, 0, 899, 1100, 1150, 1151, 1);
+	//addEquipmentItem("ÈÆ·Ã¿ë È°", "name_trainingBow", "des_trainingBow",
+	//	"ÈÆ·Ã¿ë È°", ITEM_WEAPON, TRAININGBOW_IDX, 0, 15, 0, 0, 899, 1100, 1150, 1151, 1);
+	//addEquipmentItem("ÈÆ·Ã¿ë ´Ü°Ë", "name_trainingShortSword", "des_trainingShortSword",
+	//	"ÈÆ·Ã¿ë ´Ü°Ë", ITEM_WEAPON, TRAININGSWORD_IDX, 0, 20, 0, 0, 899, 1100, 1150, 1151, 1);
 
-	//ÀÏ¹Ý ¾ÆÀÌÅÛ Ãß°¡
-	addNormalItem("Ç³ºÎÇÑ Á©¸®", "name_richJelly", "des_richJelly", "Ç³ºÎÇÑ Á©¸®", RICHJELLY_IDX, 3, 6, 8, 9, 10);
-	addNormalItem("¸Íµ¶¼º Á©¸®", "name_venomJelly", "des_venomJelly", "¸Íµ¶¼º Á©¸®", VENOMJELLY_IDX, 17, 22, 24, 25, 10);
-	addNormalItem("°­È­ ¼öÁ¤", "name_crystal", "des_crystal", "°­È­ ¼öÁ¤", CRYSTAL_IDX, 89, 110, 115, 116, 5);
-
-	addNormalItem("µ¢±¼", "name_vine", "des_vine", "µ¢±¼", VINE_IDX, 2, 3, 5, 6, 10);
-	addNormalItem("ÀÌ»¡¼®", "name_teethStone", "des_teethStone", "ÀÌ»¡¼®", TEETHSTONE_IDX, 3, 6, 8, 9, 10);
-	addNormalItem("»Ñ¸®", "name_root", "des_root", "»Ñ¸®", ROOT_IDX, 3, 6, 8, 9, 10);
-	addNormalItem("¼è¸·´ë", "name_ironBar", "des_ironBar", "¼è¸·´ë", IRONBAR_IDX, 21, 28, 30, 31, 10);
-	addNormalItem("ÁÖ¹° ÀÜÇØ", "name_foundryRests", "des_foundryRests", "ÁÖ¹° ÀÜÇØ", FOUNDRYRESTS_IDX, 134, 165, 173, 174, 5);
-	addNormalItem("¸Á°¡Áø °Ë", "name_brokenSword", "des_brokenSword", "¸Á°¡Áø °Ë", BROKENSWORD_IDX, 134, 165, 173, 174, 5);
-	addNormalItem("Ãµ", "name_fabric", "des_fabric", "Ãµ", FABRIC_IDX, 224, 275, 288, 289, 5);
-	addNormalItem("°æÈ­ °­Ã¶", "name_hardenedSteel", "des_hardenedSteel", "°æÈ­ °­Ã¶", HARDENEDSTEEL_IDX, 269, 330, 345, 346, 5);
-
-	//Æ÷¼Ç ¾ÆÀÌÅÛ Ãß°¡ 
-	addPotionItem("HP ¹°¾à¥°", "name_hpPotion1", "des_hpPotion1", "HP ¹°¾à¥°",
-		POTION1_IDX, 40, 111, 138, 144, 145, 5);
-	addPotionItem("HP ¹°¾à¥±", "name_hpPotion2", "des_hpPotion2", "HP ¹°¾à¥±",
-		POTION2_IDX, 75, 719, 880, 920, 921, 5);
-
-	//¹«±â ¾ÆÀÌÅÛ Ãß°¡ 
-	addEquipmentItem("ÈÆ·Ã¿ë È°", "name_trainingBow", "des_trainingBow",
-		"ÈÆ·Ã¿ë È°", ITEM_WEAPON, TRAININGBOW_IDX, 0, 15, 0, 0, 899, 1100, 1150, 1151, 1);
-	addEquipmentItem("ÈÆ·Ã¿ë ´Ü°Ë", "name_trainingShortSword", "des_trainingShortSword",
-		"ÈÆ·Ã¿ë ´Ü°Ë", ITEM_WEAPON, TRAININGSWORD_IDX, 0, 20, 0, 0, 899, 1100, 1150, 1151, 1);
+	csvItemDataLoad("CSVdata/itemData_nomal.csv", CSVITEMTYPE::CSV_NOMAL);
+	csvItemDataLoad("CSVdata/itemData_potion.csv", CSVITEMTYPE::CSV_POTION);
+	csvItemDataLoad("CSVdata/itemData_weapon.csv", CSVITEMTYPE::CSV_WEAPON);
 
 }
 
