@@ -11,6 +11,7 @@
 ---
 ## 다운로드 링크
 - https://drive.google.com/file/d/189KbOcV0lMBCOGyDyWXr5zjajjrVvIF_/view?usp=sharing
+- 다운로드 및 압축해제 후 CopyMoonLighter.exe 실행
 ---
 
 # 환경
