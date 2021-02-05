@@ -1,5 +1,7 @@
 # Copy MoonLighter
-PRG 문라이터 모작
+- PRG 문라이터 모작
+
+![unnamed](https://user-images.githubusercontent.com/43703023/106983604-84cb9300-67a9-11eb-9eb1-f5255ed7779f.jpg)
 
 - 원작 설명 링크 https://namu.wiki/w/Moonlighter
 
